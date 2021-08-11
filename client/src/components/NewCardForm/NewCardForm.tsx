@@ -33,11 +33,11 @@ const NewCardForm: FC<CardDialogFormProps> = ({ columnId }): JSX.Element => {
             })}
             onSubmit={(values, { setSubmitting }) => {
               setSubmitting(false);
-              const modifiedBoard = Array.from(board);
-              const columnToAddCard: Column | undefined = modifiedBoard.find((e) => e.id === columnId);
+              const modifiedBoard = Array.from(board.columns);
+              const columnToAddCard: Column | undefined = modifiedBoard.find((e) => e._id === columnId);
               if (columnToAddCard) {
-                columnToAddCard.cards.push({ ...values, id: values.name, color: selectedColor });
-                updateBoard(modifiedBoard);
+                columnToAddCard.cards.push({ ...values, name: values.name, colorCode: selectedColor });
+                updateBoard({ columns: modifiedBoard });
                 handleToggleForm();
               }
             }}
