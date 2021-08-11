@@ -1,22 +1,30 @@
-import { useState, useContext, createContext, FunctionComponent, useCallback } from 'react';
-import { Column } from '../interface/Column';
-import { columns } from '../mocks/mockBoardData';
+import { useState, useContext, createContext, FunctionComponent, useCallback, useEffect } from 'react';
+import handleBoard from '../helpers/APICalls/handleBoards';
+import { listBoard } from '../helpers/APICalls/listBoards';
+import { Board } from '../interface/Board';
 
 interface IBoardContext {
-  board: Column[];
-  updateBoard: (board: Column[]) => void;
+  board: Board;
+  updateBoard: (board: Board) => void;
 }
 
-export const BoardContext = createContext<IBoardContext>({
-  board: [],
-  updateBoard: () => null,
-});
+export const BoardContext = createContext<IBoardContext>({} as IBoardContext);
 
 export const BoardProvider: FunctionComponent = ({ children }): JSX.Element => {
-  const [board, setBoard] = useState(columns);
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [board, setBoard] = useState<Board>({} as Board);
 
-  const updateBoard = useCallback((newBoard: Column[]) => {
+  useEffect(() => {
+    listBoard().then((res) => setBoards(res.board));
+  }, []);
+
+  useEffect(() => {
+    setBoard(boards[0]);
+  }, [boards]);
+
+  const updateBoard = useCallback((newBoard: Board) => {
     setBoard(newBoard);
+    handleBoard(newBoard.columns).then((res) => setBoard(res.board));
   }, []);
 
   return <BoardContext.Provider value={{ board, updateBoard }}>{children}</BoardContext.Provider>;
