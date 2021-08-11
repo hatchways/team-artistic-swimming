@@ -27,8 +27,8 @@ const Board: FC = (): JSX.Element => {
       return;
     }
     if (destination.droppableId === 'addColumnLeft' || destination.droppableId === 'addColumnRight') {
-      const boardArrangement = Array.from(board);
-      const draggedCardColumn: Column | undefined = boardArrangement.find((e) => e.id === source.droppableId);
+      const boardArrangement = Array.from(board.columns);
+      const draggedCardColumn: Column | undefined = boardArrangement.find((e) => e._id === source.droppableId);
       if (draggedCardColumn) {
         const [draggedCard] = draggedCardColumn.cards.splice(source.index, 1);
         const details = {
@@ -44,16 +44,16 @@ const Board: FC = (): JSX.Element => {
       }
     }
     if (result.type === 'column') {
-      const columnArrangement = Array.from(board);
+      const columnArrangement = Array.from(board.columns);
       const [draggedColumn] = columnArrangement.splice(source.index, 1);
       columnArrangement.splice(destination.index, 0, draggedColumn);
-      updateBoard(columnArrangement);
+      updateBoard({ columns: columnArrangement });
       return;
     }
-    const start: Column | undefined = board.find((e) => e.id === source.droppableId);
-    const finish: Column | undefined = board.find((e) => e.id === destination.droppableId);
+    const start: Column | undefined = board.columns.find((e) => e._id === source.droppableId);
+    const finish: Column | undefined = board.columns.find((e) => e._id === destination.droppableId);
     if (start && finish) {
-      if (start.id === finish.id) {
+      if (start._id === finish._id) {
         const [draggedCard] = start.cards.splice(source.index, 1);
         start.cards.splice(destination.index, 0, draggedCard);
         updateBoard(board);
@@ -92,9 +92,9 @@ const Board: FC = (): JSX.Element => {
             <div className={classes.board} {...provided.droppableProps} ref={provided.innerRef}>
               <AddColumnWidget droppableId="addColumnLeft" showing={showingWidgetLeft} />
               <Grid container>
-                {board.map((column, index) => (
-                  <Box key={column.id}>
-                    <BoardColumn column={column.cards} droppableId={column.id} title={column.title} index={index} />
+                {board.columns.map((column, index) => (
+                  <Box key={column._id}>
+                    <BoardColumn column={column} droppableId={column._id} title={column.name} index={index} />
                   </Box>
                 ))}
               </Grid>
